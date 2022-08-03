@@ -71,6 +71,7 @@ bool RTCMParsing::addByte(uint8_t b)
 			uint8_t *new_buffer = new uint8_t[new_buffer_len];
 
 			if (!new_buffer) {
+				// New buffer not allocated. Not enough memory. Return false.
 				delete[](_buffer);
 				_buffer = nullptr;
 				return false;
