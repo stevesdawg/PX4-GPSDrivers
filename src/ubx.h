@@ -914,6 +914,7 @@ public:
 		MovingBase,                ///< RTCM output on UART2 to a rover (GPS is installed on the vehicle)
 		RoverWithMovingBaseUART1, ///< expect RTCM input on UART1 from a moving base for heading output
 		MovingBaseUART1,          ///< RTCM output on UART1 to a rover (GPS is installed on the vehicle)
+		RTCMOverTelemRadio,		  ///< expect RTCM input on UART2 via a Telem Radio (baud 57600)
 	};
 
 	GPSDriverUBX(Interface gpsInterface, GPSCallbackPtr callback, void *callback_user,

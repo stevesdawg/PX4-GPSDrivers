@@ -672,13 +672,12 @@ int GPSDriverUBX::configureDevice(const GNSSSystemsMask &gnssSystems)
 
 	int uart2_baudrate = 230400;
 
-	if (_mode == UBXMode::RoverWithMovingBase) {
+	if (_mode == UBXMode::RoverWithMovingBase || _mode == UBXMode::RTCMOverTelemRadio) {
 		UBX_DEBUG("Configuring UART2 for rover");
 		cfg_valset_msg_size = initCfgValset();
 		cfgValset<uint8_t>(UBX_CFG_KEY_CFG_UART1OUTPROT_UBX, 1, cfg_valset_msg_size);
 		cfgValset<uint8_t>(UBX_CFG_KEY_CFG_UART1OUTPROT_RTCM3X, 0, cfg_valset_msg_size);
-		// heading output period 1 second
-		cfgValset<uint8_t>(UBX_CFG_KEY_MSGOUT_UBX_NAV_RELPOSNED_UART1, 1, cfg_valset_msg_size);
+
 		// enable RTCM input on uart2 + set baudrate
 		cfgValset<uint8_t>(UBX_CFG_KEY_CFG_UART2_STOPBITS, 1, cfg_valset_msg_size);
 		cfgValset<uint8_t>(UBX_CFG_KEY_CFG_UART2_DATABITS, 0, cfg_valset_msg_size);
@@ -688,6 +687,15 @@ int GPSDriverUBX::configureDevice(const GNSSSystemsMask &gnssSystems)
 		cfgValset<uint8_t>(UBX_CFG_KEY_CFG_UART2INPROT_NMEA, 0, cfg_valset_msg_size);
 		cfgValset<uint8_t>(UBX_CFG_KEY_CFG_UART2OUTPROT_UBX, 0, cfg_valset_msg_size);
 		cfgValset<uint8_t>(UBX_CFG_KEY_CFG_UART2OUTPROT_RTCM3X, 0, cfg_valset_msg_size);
+	
+		if (_mode == UBXMode::RoverWithMovingBase) {
+			// Rover in moving base configuration
+			// heading output period 1 second
+			cfgValset<uint8_t>(UBX_CFG_KEY_MSGOUT_UBX_NAV_RELPOSNED_UART1, 1, cfg_valset_msg_size);
+		} else {
+			// RTCM over Telem Radio
+			uart2_baudrate = 57600;
+		}
 		cfgValset<uint32_t>(UBX_CFG_KEY_CFG_UART2_BAUDRATE, uart2_baudrate, cfg_valset_msg_size);
 
 		if (!sendMessage(UBX_MSG_CFG_VALSET, (uint8_t *)&_buf, cfg_valset_msg_size)) {
